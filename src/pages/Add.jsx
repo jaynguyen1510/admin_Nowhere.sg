@@ -3,6 +3,7 @@ import { UploadCloud } from 'lucide-react';
 import axios from 'axios';
 import { backendUrl } from '../App';
 import { toast } from 'react-toastify';
+import { AiOutlineLoading } from 'react-icons/ai';
 
 const Add = () => {
     const [imageFiles, setImageFiles] = useState([null, null, null, null]);
@@ -15,6 +16,7 @@ const Add = () => {
     const [price, setPrice] = useState('');
     const [sizes, setSizes] = useState([]);
     const [isBestseller, setIsBestseller] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleImageChange = (e, index) => {
         const file = e.target.files[0];
@@ -30,7 +32,7 @@ const Add = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+        setIsLoading(true); // ✅ bật loading
         try {
             const token = localStorage.getItem('token');
             const formData = new FormData();
@@ -59,6 +61,8 @@ const Add = () => {
         } catch (error) {
             console.error(error);
             toast.error('Thêm sản phẩm thất bại!');
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -209,9 +213,12 @@ const Add = () => {
                 <div className="text-center">
                     <button
                         type="submit"
-                        className="mt-4 px-6 py-3 bg-red-800 text-white rounded-xl hover:bg-red-700 transition duration-200"
+                        disabled={isLoading}
+                        className={`mt-4 px-6 py-3 rounded-xl transition duration-200 flex items-center justify-center gap-2 mx-auto
+                            ${isLoading ? 'bg-red-600 cursor-not-allowed' : 'bg-red-800 hover:bg-red-700 text-white'}`}
                     >
-                        Thêm sản phẩm
+                        {isLoading && <AiOutlineLoading className="animate-spin text-white w-5 h-5" />}
+                        {isLoading ? 'Đang xử lý...' : 'Thêm sản phẩm'}
                     </button>
                 </div>
             </div>
