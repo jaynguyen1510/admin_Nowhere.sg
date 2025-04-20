@@ -5,7 +5,7 @@ import { backendUrl } from '../App';
 import { toast } from 'react-toastify';
 import { AiOutlineLoading } from 'react-icons/ai';
 
-const Add = () => {
+const Add = ({ token }) => {
     const [imageFiles, setImageFiles] = useState([null, null, null, null]);
     const [previewImages, setPreviewImages] = useState([null, null, null, null]);
 
@@ -34,7 +34,6 @@ const Add = () => {
         e.preventDefault();
         setIsLoading(true); // ✅ bật loading
         try {
-            const token = localStorage.getItem('token');
             const formData = new FormData();
             formData.append('name', productName);
             formData.append('description', productDescription);
@@ -56,11 +55,19 @@ const Add = () => {
                     'Content-Type': 'multipart/form-data',
                 },
             });
-
-            toast.success(res.data.message || 'Thêm sản phẩm thành công!');
+            if (res.data.success) {
+                toast.success(res.data.message || 'Thêm sản phẩm thành công!');
+                setIsLoading(false);
+                setPreviewImages([null, null, null, null]);
+                setImageFiles([null, null, null, null]);
+                setProductName('');
+                setProductDescription('');
+                setPrice('');
+            } else {
+                toast.error(res.data.message || 'Lỗi thêm sản phẩm!');
+            }
         } catch (error) {
             console.error(error);
-            toast.error('Thêm sản phẩm thất bại!');
         } finally {
             setIsLoading(false);
         }
